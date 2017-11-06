@@ -23,13 +23,12 @@ import java.util.regex.Pattern;
  * Created by qifan on 2017/11/6.
  */
 public class caca {
-    public final static String LANG_SEARCH = "lang_fr";
-    public final static String SEARCH_URL = "https://www.google.com/search";
-
+    private final static String LANG_SEARCH = "lang_fr";
+    private final static String SEARCH_URL = "https://www.google.com/search";
 
 
     public static void main(String[] args) {
-        SpotlightService spotlightService=new SpotlightService();
+        SpotlightService spotlightService = new SpotlightService();
         Scanner scanner = new Scanner(System.in);
         System.out.println("Please enter the search term.");
         String searchTerm = scanner.nextLine();
@@ -37,7 +36,7 @@ public class caca {
         int num = scanner.nextInt();
         scanner.close();
 
-        String searchURL = SEARCH_URL + "?q=" + searchTerm + "&num=" + num + "&lr=" + LANG_SEARCH;
+        String searchURL = SEARCH_URL + "?q=" + searchTerm + "&num=" + 4 * num + "&lr=" + LANG_SEARCH;
         //without proper User-Agent, we will get 403 error
         Document doc = null;
         try {
@@ -51,9 +50,17 @@ public class caca {
 
         //If google search results HTML change the <h3 class="r" to <h3 class="r1"
         //we need to change below accordingly
-        Elements results = doc.select("h3.r > a");
+        Elements results = null;
+        if (doc != null) {
+            results = doc.select("h3.r > a");
+        }
 
+
+        int countResults = 0;
         for (Element result : results) {
+            if(countResults>=num){
+                break;
+            }
             String linkHref = result.attr("href");
             String linkText = result.text();
             String url = linkHref.substring(7, linkHref.indexOf("&"));
@@ -65,9 +72,10 @@ public class caca {
                     String scaca = caca.body().select("p").text();
                     System.out.println(scaca);
                     System.out.println("-----------");
-                    System.out.println(spotlightService.SpotRDFFromURL(scaca,0.5f,20));
+                    System.out.println(spotlightService.SpotRDFFromURL(scaca, 0.5f, 20));
+                    countResults++;
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    continue;
                 }
             }
             //System.out.println("Text::" + linkText + ", URL::" + linkHref);//.substring(7, linkHref.indexOf("&")));
