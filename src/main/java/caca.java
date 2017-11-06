@@ -1,3 +1,4 @@
+import org.apache.jena.rdf.model.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -7,6 +8,7 @@ import javax.net.ssl.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -76,37 +78,26 @@ public class caca {
                     System.out.println(scaca);
                     System.out.println("-----------");
                     Set<String> keywords = spotlightService.SpotRDFFromURL(scaca, 0.5f, 20);
-                    System.out.println(executeSPARQL(keywords));
+                    SparqlService ss = new SparqlService();
+                    String res = ss.getResultFromKeywords(keywords);
+                    PrintWriter out = new PrintWriter(countResults+".n3");
+                    out.println(res);
+                    out.close();
+                    Model model = ModelFactory.createDefaultModel();
+                    model.read(countResults+".n3","N3");
+                    PrintWriter out2 = new PrintWriter(countResults+".rdf");
+                    model.write(out2,"RDF/XML");
+                    out2.close();
                     countResults++;
                 } catch (IOException e) {
                     continue;
                 }
             }
+
             //System.out.println("Text::" + linkText + ", URL::" + linkHref);//.substring(7, linkHref.indexOf("&")));
         }
 
     }
-
-    public static Document executeSPARQL(Set<String> keywords) {
-        String filterWords="";
-        Iterator<String> it = keywords.iterator();
-        filterWords+="<"+it.next()+">";
-        while (it.hasNext()) {
-            filterWords+=",<"+it.next()+">";
-        }
-        String query = "select * WHERE { FILTER((?o IN("+filterWords+"))&&(?s IN("+filterWords+")))" +" ?s ?p ?o. }";
-        Document doc = null;
-        try {
-            doc = Jsoup.connect(SPARQL_URL)
-                    .data("query", query)
-                    .post();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return doc;
-    }
-
-
 
 }
 
