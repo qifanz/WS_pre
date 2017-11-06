@@ -15,7 +15,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Iterator;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,6 +27,7 @@ import java.util.regex.Pattern;
 public class caca {
     private final static String LANG_SEARCH = "lang_fr";
     private final static String SEARCH_URL = "https://www.google.com/search";
+    private final static String SPARQL_URL = "http://fr.dbpedia.org/sparql";
 
 
     public static void main(String[] args) {
@@ -58,7 +61,7 @@ public class caca {
 
         int countResults = 0;
         for (Element result : results) {
-            if(countResults>=num){
+            if (countResults >= num) {
                 break;
             }
             String linkHref = result.attr("href");
@@ -72,7 +75,8 @@ public class caca {
                     String scaca = caca.body().select("p").text();
                     System.out.println(scaca);
                     System.out.println("-----------");
-                    System.out.println(spotlightService.SpotRDFFromURL(scaca, 0.5f, 20));
+                    Set<String> keywords = spotlightService.SpotRDFFromURL(scaca, 0.5f, 20);
+                    System.out.println(executeSPARQL(keywords));
                     countResults++;
                 } catch (IOException e) {
                     continue;
@@ -82,6 +86,27 @@ public class caca {
         }
 
     }
+
+    public static Document executeSPARQL(Set<String> keywords) {
+        String filterWords="";
+        Iterator<String> it = keywords.iterator();
+        filterWords+="<"+it.next()+">";
+        while (it.hasNext()) {
+            filterWords+=",<"+it.next()+">";
+        }
+        String query = "select * WHERE { FILTER((?o IN("+filterWords+"))&&(?s IN("+filterWords+")))" +" ?s ?p ?o. }";
+        Document doc = null;
+        try {
+            doc = Jsoup.connect(SPARQL_URL)
+                    .data("query", query)
+                    .post();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return doc;
+    }
+
+
 
 }
 
