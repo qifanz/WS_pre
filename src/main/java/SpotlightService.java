@@ -1,18 +1,22 @@
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SpotlightService {
 
     final String BASE_URL = "http://model.dbpedia-spotlight.org/fr/annotate";
 
     //services
-    public String SpotRDFFromURL(String text,float confidence,int support){
+    public Set<String> SpotRDFFromURL(String text,float confidence,int support){
         String builtUrl="";
+        Set<String> keywords=new HashSet<String>();
         try {
             builtUrl = BuildUrl(text,confidence,support);
         } catch (UnsupportedEncodingException e) {
@@ -23,13 +27,22 @@ public class SpotlightService {
         try {
             Document doc = Jsoup.connect(builtUrl).header("Accept","application/xhtml+xml").get();
             Element div = doc.getElementsByTag("div").first();
-            return div.toString();
+            Elements results=div.select("a");
+            for (Element result : results) {
+
+                String linkHref = result.attr("href");
+                keywords.add(linkHref);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+        return keywords;
     }
     private String BuildUrl(String text,float confidence,int support) throws UnsupportedEncodingException {
-        return BASE_URL+"?text="+URLEncoder.encode(text, "UTF-8")+"&confidence="+confidence+"&support="+support;
+        String builtUrl= BASE_URL+"?text="+URLEncoder.encode(text, "UTF-8")+"&confidence="+confidence+"&support="+support;
+        if(builtUrl.length()>5000) {
+            return builtUrl.substring(0,5000);
+        }
+        return builtUrl;
     }
 }

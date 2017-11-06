@@ -36,7 +36,7 @@ public class caca {
         int num = scanner.nextInt();
         scanner.close();
 
-        String searchURL = SEARCH_URL + "?q=" + searchTerm + "&num=" + 4 * num + "&lr=" + LANG_SEARCH;
+        String searchURL = SEARCH_URL + "?q=" + searchTerm + "&num=" + 2 * num + "&lr=" + LANG_SEARCH;
         //without proper User-Agent, we will get 403 error
         Document doc = null;
         try {
