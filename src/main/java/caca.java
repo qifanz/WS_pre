@@ -17,6 +17,8 @@ import java.util.regex.Pattern;
  * Created by qifan on 2017/11/6.
  */
 public class caca {
+    public final static String LANG_SEARCH="lang_en";
+    public final static String SEARCH_URL="https://www.google.com/search";
 
     public static void main(String[] args) throws IOException {
         //Taking search term input from console
@@ -27,7 +29,7 @@ public class caca {
         int num = scanner.nextInt();
         scanner.close();
 
-        String searchURL = "https://www.google.com/search" + "?q="+searchTerm+"&num="+num;
+        String searchURL = SEARCH_URL+ "?q="+searchTerm+"&num="+num+"&lr="+LANG_SEARCH;
         //without proper User-Agent, we will get 403 error
         Document doc = Jsoup.connect(searchURL).userAgent("Mozilla/5.0").get();
 
