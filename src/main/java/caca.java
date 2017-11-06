@@ -29,7 +29,7 @@ public class caca {
 
 
     public static void main(String[] args) {
-
+        SpotlightService spotlightService=new SpotlightService();
         Scanner scanner = new Scanner(System.in);
         System.out.println("Please enter the search term.");
         String searchTerm = scanner.nextLine();
@@ -64,6 +64,8 @@ public class caca {
                     caca = Jsoup.connect(url).userAgent("Mozilla/5.0").get();
                     String scaca = caca.body().select("p").text();
                     System.out.println(scaca);
+                    System.out.println("-----------");
+                    System.out.println(spotlightService.SpotRDFFromURL(scaca,0.5f,20));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
