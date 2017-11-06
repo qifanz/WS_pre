@@ -20,7 +20,6 @@ public class SpotlightService {
         }
         return null;
     }
-
     private String BuildUrl(String text,float confidence,int support){
         return BASE_URL+"?text="+text+"&confidence="+confidence+"&support="+support;
     }
