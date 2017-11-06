@@ -26,4 +26,3 @@ hs_err_pid*
 .idea/**/tasks.xml
 .idea/dictionaries
 .idea/libraries/org_jsoup_jsoup_1_11_1.xml
-*.xml

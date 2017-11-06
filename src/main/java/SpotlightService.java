@@ -23,13 +23,11 @@ public class SpotlightService {
             e.printStackTrace();
         }
 
-
         try {
             Document doc = Jsoup.connect(builtUrl).header("Accept","application/xhtml+xml").get();
             Element div = doc.getElementsByTag("div").first();
             Elements results=div.select("a");
             for (Element result : results) {
-
                 String linkHref = result.attr("href");
                 keywords.add(linkHref);
             }
@@ -39,10 +37,10 @@ public class SpotlightService {
         return keywords;
     }
     private String BuildUrl(String text,float confidence,int support) throws UnsupportedEncodingException {
-        String builtUrl= BASE_URL+"?text="+URLEncoder.encode(text, "UTF-8")+"&confidence="+confidence+"&support="+support;
-        if(builtUrl.length()>5000) {
-            return builtUrl.substring(0,5000);
+
+        if(text.length()>4500){
+            text = text.substring(0,4500);
         }
-        return builtUrl;
+        return BASE_URL+"?text="+URLEncoder.encode(text, "UTF-8")+"&confidence="+confidence+"&support="+support;
     }
 }
