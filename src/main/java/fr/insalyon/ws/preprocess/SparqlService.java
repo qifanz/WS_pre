@@ -1,41 +1,24 @@
+package fr.insalyon.ws.preprocess;
+
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Iterator;
 import java.util.Set;
 
 public class SparqlService {
-    private final static String SPARQL_URL = "http://fr.dbpedia.org/sparql";
 
+    private final static String SPARQL_URL_FR = "http://fr.dbpedia.org/sparql";
+    private final static String SPARQL_URL_EN = "http://dbpedia.org/sparql";
 
     public String getQueryFromKeys(Set<String> keywords){
         String filter = conditionBuilder(keywords);
         return "construct{?s ?p ?o} WHERE { FILTER((?o IN("+filter+"))&&(?s IN("+filter+")))" +" ?s ?p ?o. }";
     }
 
-    public String getResultFromKeywords(Set<String> keywords) throws IOException {
-        Document doc;
-        String res = null;
-        try {
-            res = Unirest.post(SPARQL_URL)
+    public String getResultFromKeywords(Set<String> keywords,boolean useEn) throws UnirestException {
+        return Unirest.post(useEn ? SPARQL_URL_EN:SPARQL_URL_FR)
                     .queryString("query", getQueryFromKeys(keywords))
                     .asString().getBody();
-        } catch (UnirestException e) {
-            e.printStackTrace();
-        }
-        doc = Jsoup.connect(SPARQL_URL)
-                .userAgent("Mozilla/5.0")
-                .data("query", getQueryFromKeys(keywords))
-                .data("default-graph-uri", "http://fr.dbpedia.org")
-                .data("timeout", "30000")
-                .data("format", "auto")
-                .get();
-        return res;
     }
 
     private String conditionBuilder(Set<String> keywords){
