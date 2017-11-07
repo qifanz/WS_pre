@@ -99,7 +99,6 @@ public class caca {
                     continue;
                 }
             }
-
             //System.out.println("Text::" + linkText + ", URL::" + linkHref);//.substring(7, linkHref.indexOf("&")));
 */        }
 
